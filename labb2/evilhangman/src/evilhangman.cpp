@@ -1,4 +1,4 @@
--#include <algorithm>
+#include <algorithm>
 #include <iostream>
 #include <fstream>
 #include <vector>
@@ -10,9 +10,9 @@ using namespace std;
 const string ALPHABET  = "abcdefghijklmnopqrstuvwxyz";
 
 
-void curGameStatus(int guesses, vector<char>& unkWord, set<string>& words, char debug) {
+void curGameStatus(const int& guesses, const vector<char>& unkWord, const set<string>& words, const char& debug) {
 
-    for (int i = 0; i < unkWord.size(); i++) {
+    for (unsigned int i = 0; i < unkWord.size(); i++) {
         cout << " " << unkWord[i] << " ";
     }
     cout << "\n" << endl;
@@ -26,14 +26,17 @@ void curGameStatus(int guesses, vector<char>& unkWord, set<string>& words, char 
     return;
 }
 
-char nextGuess(set<char>& guessedChars) {
+void nextGuess(char& newGuess, set<char>& guessedChars) {
 
     cout << "Enter your guess: ";
     char newChar;
+    string newString;
 
     while (true) {
-        cin >> newChar;
-        if (newChar >= 'a' && newChar <= 'z') {
+        cin >> newString;
+        if (newString.length() == 1 && ALPHABET.find(newString) != string::npos) {
+            newChar = newString[0];
+
             if (guessedChars.find(newChar) == guessedChars.end()) {
                 guessedChars.insert(newChar);
                 break;
@@ -42,89 +45,115 @@ char nextGuess(set<char>& guessedChars) {
                 cout << "Already tried letter, choose a new one: ";
             }
         }
-        else
-        {
-            cout << "Enter a lowercase english character" << endl;
+        else {
+            cout << "Enter one lowercase english character" << endl;
         }
     }
 
     cout << endl;
-    return newChar;
+    newGuess = newChar;
 }
 
-void updateCurWords(char newGuess, set<string>& words, vector<char>& unkWord) {
+void newWordFamilies(const char& newGuess, set<string>& words, map<string, set<string>>& wordFamilies) {
+    //map<string, set<string> > wordFamilies;
 
-    int reuseLetter = -1;
-    int maxIndex, maxSize = -1;
-    map<int, set<string>> partitions;
-    int word_l = words.begin() -> length();
+    for(set<string>::iterator wordPtr = words.begin(); wordPtr != words.end(); wordPtr++) {
 
-    for (int i = 0; i < unkWord.size(); i++) {
-        if (unkWord[i] == newGuess) {
-            reuseLetter = i;
-        }
-    }
+        string familyType = "";
 
-    for (set<string>::iterator itr = words.begin(); itr != words.end(); itr++) {
-        int pos;
-        string curWord = *itr;
-        pos = curWord.find(newGuess, reuseLetter+1);
+        for (unsigned int i = 0; i < wordPtr->size(); i++) {
 
-        if (pos == string::npos) {
-            partitions[0].insert(curWord);
-        }
-        else {
-            for (int i = 0; i < word_l; i++) {
-                if (pos == i) {
-                    partitions[i+1].insert(curWord);
-                }
+            if (wordPtr->at(i) == newGuess) {
+                familyType += newGuess;
+            } else {
+                familyType += '_';
             }
         }
-    }
 
-    for (map<int, set<string>>::iterator itr = partitions.begin(); itr != partitions.end(); itr++) {
-        int size = (*itr).second.size();
-
-        if (size > maxSize) {
-            maxSize = size;
-            maxIndex = (*itr).first;
+        if (wordFamilies.count(familyType)) {
+            // operator[] returns a reference to the map element. Important for efficiency
+            wordFamilies[familyType].insert(*wordPtr);
+        }
+        else {
+            set<string> familySet;
+            familySet.insert(*wordPtr);
+            wordFamilies[familyType] = familySet;
         }
     }
-
-    words = partitions[maxIndex];
-
-    if (maxIndex != 0) {
-        unkWord[maxIndex-1] = newGuess;
-    }
-
-
-
-    return;
 }
 
-int evilHangman(int guesses, int word_l, set<string>& words, char debug) {
+void CountLargestFamily(map<string, set<string> >& wordFamilies, set<string>& words) {
+    words.clear();
 
+    for (map<string, set<string>>::iterator pairItr = wordFamilies.begin(); pairItr != wordFamilies.end(); pairItr++) {
+        set<string> wordFamily = pairItr->second;
+
+        if (wordFamily.size() > words.size()) {
+            words = wordFamily;
+        }
+    }
+}
+
+void updateCurWords(const char& newGuess, set<string>& words) {
+
+    map<string, set<string>> wordFamilies;
+    newWordFamilies(newGuess, words, wordFamilies);
+
+    CountLargestFamily(wordFamilies, words);
+}
+
+void updateGuesses(const char& newGuess, int& guesses, set<string>& words) {
+
+    set<string>::iterator wordPtr = words.begin();
+
+    if (wordPtr -> find(newGuess) == -1) {
+        cout << "Incorrect guess." << endl;
+        guesses--;
+    }
+    else {
+        cout << "Correct guess" << endl;
+    }
+}
+
+void updateUnkWord(const char& newGuess, const set<string> words, vector<char>& unkWord) {
+
+    set<string>::iterator ptr = words.begin();
+
+    for (unsigned int i = 0; i < ptr -> size(); i++) {
+        if (ptr -> at(i) == newGuess) {
+            unkWord[i] = newGuess;
+        }
+    }
+}
+
+int evilHangman(int& guesses, int word_l, set<string>& words, const char& debug) {
+
+    char newGuess;
     set<char> guessedChars;
     vector<char> unkWord(word_l, '_');
 
     while(guesses > 0) {
         curGameStatus(guesses, unkWord, words, debug);
 
-        char newGuess = nextGuess(guessedChars);
+        nextGuess(newGuess, guessedChars);
 
-        updateCurWords(newGuess, words, unkWord);
+        updateCurWords(newGuess, words);
+
+        updateGuesses(newGuess, guesses, words);
+
+        updateUnkWord(newGuess, words, unkWord);
 
         if (count(unkWord.begin(), unkWord.end(), '_') == 0) {
             cout << "Well done, you've won!" << endl;
-            cout << "The word was:" << endl;
+            cout << "The word was:" << "\n" << endl;
 
-            for (int i = 0; i < unkWord.size(); i++) {
+            for (unsigned int i = 0; i < unkWord.size(); i++) {
                  cout << unkWord[i];
             }
-            cout << endl;
+            cout << "\n" << endl;
             return 0;
         }
-        guesses--;
+        //guesses--;
     }
 
     guessedChars.clear();
@@ -139,9 +168,9 @@ int main() {
     int guesses;
     char debug, cont;
     bool valid, end = false;
-    int word_l, min_l, max_l;
     set<string> dictionary, words;
-    ifstream file ("di.txt");
+    unsigned int word_l, min_l, max_l;
+    ifstream file ("dictionary.txt");
 
     cout << "Welcome to Hangman." << endl;
 
@@ -149,7 +178,7 @@ int main() {
         string temp;
 
         while (getline(file, temp)) {
-            int cur_l = temp.length();
+            unsigned int cur_l = temp.length();
             dictionary.insert(temp);
 
             if (cur_l < min_l) {
@@ -214,11 +243,11 @@ int main() {
 
         evilHangman(guesses, word_l, words, debug);
 
-        cout << "Play again? [y/n]:";
-        cin >> cont;
-        cout << endl;
-
         while (true) {
+            cout << "Play again? [y/n]:";
+            cin >> cont;
+            cout << endl;
+
             if (cont == 'n') {
                 end = true;
                 break;
