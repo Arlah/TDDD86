@@ -71,7 +71,6 @@ void newWordFamilies(const char& newGuess, set<string>& words, map<string, set<s
         }
 
         if (wordFamilies.count(familyType)) {
-            // operator[] returns a reference to the map element. Important for efficiency
             wordFamilies[familyType].insert(*wordPtr);
         }
         else {
@@ -82,11 +81,17 @@ void newWordFamilies(const char& newGuess, set<string>& words, map<string, set<s
     }
 }
 
-void CountLargestFamily(map<string, set<string> >& wordFamilies, set<string>& words) {
+void CountLargestFamily(map<string, set<string> >& wordFamilies, set<string>& words, const int guesses, const char newGuess) {
     words.clear();
 
     for (map<string, set<string>>::iterator pairItr = wordFamilies.begin(); pairItr != wordFamilies.end(); pairItr++) {
+        string key = pairItr->first;
         set<string> wordFamily = pairItr->second;
+
+        if (guesses == 1 && key.find(newGuess) == string::npos) {
+            words = wordFamily;
+            break;
+        }
 
         if (wordFamily.size() > words.size()) {
             words = wordFamily;
@@ -94,12 +99,12 @@ void CountLargestFamily(map<string, set<string> >& wordFamilies, set<string>& wo
     }
 }
 
-void updateCurWords(const char& newGuess, set<string>& words) {
+void updateCurWords(const char& newGuess, set<string>& words, const int guesses) {
 
     map<string, set<string>> wordFamilies;
     newWordFamilies(newGuess, words, wordFamilies);
 
-    CountLargestFamily(wordFamilies, words);
+    CountLargestFamily(wordFamilies, words, guesses, newGuess);
 }
 
 void updateGuesses(const char& newGuess, int& guesses, set<string>& words) {
@@ -137,7 +142,7 @@ int evilHangman(int& guesses, int word_l, set<string>& words, const char& debug)
 
         nextGuess(newGuess, guessedChars);
 
-        updateCurWords(newGuess, words);
+        updateCurWords(newGuess, words, guesses);
 
         updateGuesses(newGuess, guesses, words);
 
@@ -153,7 +158,6 @@ int evilHangman(int& guesses, int word_l, set<string>& words, const char& debug)
             cout << "\n" << endl;
             return 0;
         }
-        //guesses--;
     }
 
     guessedChars.clear();
@@ -170,7 +174,7 @@ int main() {
     bool valid, end = false;
     set<string> dictionary, words;
     unsigned int word_l, min_l, max_l;
-    ifstream file ("dictionary.txt");
+    ifstream file ("di.txt");
 
     cout << "Welcome to Hangman." << endl;
 
