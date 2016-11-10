@@ -50,46 +50,18 @@ int TileList::indexOfTopTile(const int x, const int y)
     }
     return -1;
 }
-/* Funkar...
-void TileList::raise(const int x, const int y){
-    bool found = false;
-    Tile temp;
-    Tile* tempArray = new Tile[cur_cap];
-    for (int i = cur_size - 1; i >= 0; i--) {
-        if(!found && tileList[i].contains(x, y)){
-            temp = tileList[i];
-            found = true;
-        }
-        else if(!found){
-            tempArray[i - 1] = tileList[i];
-        }
-        else if(found){
-            tempArray[i] = tileList[i];
-        }
-    }
-    if(found){
-        tempArray[cur_size - 1] = temp;
-        delete[] tileList;
-        tileList = tempArray;
-    }
-}
-*/
 
-// Funkar inte...
 void TileList::raise(const int x, const int y)
 {
     int topTileIndex = indexOfTopTile(x, y);
 
-    if (!(topTileIndex == -1)) {
+    if (topTileIndex != -1) {
         Tile topTile = tileList[topTileIndex];
-        Tile* tempTileList = tileList;
 
         for (int i = topTileIndex; i < cur_size; i++) {
-            tempTileList[i-1] = tempTileList[i];
+            tileList[i] = tileList[i+1];
         }
-        tempTileList[cur_size - 1] = topTile;
-        delete[] tileList;
-        tileList = tempTileList;
+        tileList[cur_size - 1] = topTile;
     }
 }
 
