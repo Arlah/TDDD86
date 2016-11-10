@@ -12,7 +12,7 @@ const string ALPHABET  = "abcdefghijklmnopqrstuvwxyz";
 
 void curGameStatus(const int& guesses, const vector<char>& unkWord, const set<string>& words, const char& debug) {
 
-    for (unsigned int i = 0; i < unkWord.size(); i++) {
+    for (int i = 0; i < unkWord.size(); i++) {
         cout << " " << unkWord[i] << " ";
     }
     cout << "\n" << endl;
@@ -61,7 +61,7 @@ void newWordFamilies(const char& newGuess, set<string>& words, map<string, set<s
 
         string familyType = "";
 
-        for (unsigned int i = 0; i < wordPtr->size(); i++) {
+        for (int i = 0; i < wordPtr->size(); i++) {
 
             if (wordPtr->at(i) == newGuess) {
                 familyType += newGuess;
@@ -124,7 +124,7 @@ void updateUnkWord(const char& newGuess, const set<string> words, vector<char>& 
 
     set<string>::iterator ptr = words.begin();
 
-    for (unsigned int i = 0; i < ptr -> size(); i++) {
+    for (int i = 0; i < ptr -> size(); i++) {
         if (ptr -> at(i) == newGuess) {
             unkWord[i] = newGuess;
         }
@@ -173,7 +173,7 @@ int main() {
     char debug, cont;
     bool valid, end = false;
     set<string> dictionary, words;
-    unsigned int word_l, min_l, max_l;
+    int word_l = 0, min_l = 6, max_l = 0;
     ifstream file ("di.txt");
 
     cout << "Welcome to Hangman." << endl;
@@ -182,7 +182,7 @@ int main() {
         string temp;
 
         while (getline(file, temp)) {
-            unsigned int cur_l = temp.length();
+            int cur_l = temp.length();
             dictionary.insert(temp);
 
             if (cur_l < min_l) {
@@ -192,7 +192,7 @@ int main() {
                 max_l = cur_l;
             }
         }
-        cout << "Dictionary created" << "\n" << endl;
+        cout << "Dictionary created" << "\n" << min_l << ","<< max_l << endl;
 
     }
     else {
