@@ -3,7 +3,7 @@
  * Thomas Annerfeldt,
  *
  * A class aimed at solving the famous "Traveling Salesman Problem" (TSP).
- * This variant stores "cities" as nodes using a linked list.
+ * This variant stores "cities" as nodes/points using a linked list.
  */
 
 #ifndef TOUR_H

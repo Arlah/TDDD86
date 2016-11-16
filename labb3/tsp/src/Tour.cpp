@@ -1,6 +1,6 @@
 /*
  * Tobias Fellegi, tobfe318
- * Thomas Annerfeldt,
+ * Thomas Annerfeldt, thoan578
  *
  * Implementation of the Tour class
  */
@@ -70,10 +70,25 @@ double Tour::distance()
 
 void Tour::insertNearest(Point p)
 {
-    // TODO: write this member
+    if (startNode == nullptr) {
+        startNode = newNode(p);
+        startNode -> next = startNode;
+    }
+    else {
+        Node* curNode = startNode;
+        Node* nearNode = startNode;
+        double nearDist = curNode->point.distanceTo(p);
+
+        while (curNode -> next != startNode) {
+            if (p.distanceTo(curNodecurNode -> next -> point) < nearDist) {
+                nearDist = p.distanceTo(curNodecurNode -> next -> point);
+                nearNode = curNode -> next;
+            }
+        }
+    }
 }
 
 void Tour::insertSmallest(Point p)
 {
-    // TODO: write this member
+
 }
