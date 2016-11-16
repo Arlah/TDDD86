@@ -1,8 +1,9 @@
-// This is the .cpp file you will edit and turn in.
-// We have provided a skeleton for you,
-// but you must finish it as described in the spec.
-// Also remove these comments here and add your own.
-// TODO: remove this comment header
+/*
+ * Tobias Fellegi, tobfe318
+ * Thomas Annerfeldt,
+ *
+ * Implementation of the Tour class
+ */
 
 #include <iostream>
 #include "Tour.h"
@@ -11,32 +12,60 @@
 
 Tour::Tour()
 {
-    // TODO: write this member
+
 }
 
 Tour::~Tour()
 {
-    // TODO: write this member
+    delete[] tour;
 }
 
 void Tour::show()
 {
-    // TODO: write this member
+    Node* curNode = startNode;
+
+    do {
+        cout << curNode -> point.toString() << endl;
+        curNode = curNode -> next;
+    } while (curNode != startNode);
 }
 
 void Tour::draw(QGraphicsScene *scene)
 {
-    // TODO: write this member
+    Node* curNode = startNode;
+
+    do {
+        curNode -> point.draw(scene);
+        curNode -> point.drawTo(curNode -> next -> point, scene);
+        curNode = curNode -> next;
+    } while (curNode != startNode);
 }
 
 int Tour::size()
 {
-    // TODO: write this member
+    Node* curNode = startNode;
+    int size = 0;
+
+    do {
+        size++;
+        curNode = curNode -> next;
+    } while (curNode != startNode);
+
+    return size;
 }
 
 double Tour::distance()
 {
-    // TODO: write this member
+    Node* curNode = startNode;
+    double distance = 0;
+
+    do {
+        Point nextNode = curNode -> next -> point;
+        distance += curNode -> point.distanceTo(nextNode);
+        curNode = curNode -> next;
+    } while (curNode != startNode);
+
+    return distance;
 }
 
 void Tour::insertNearest(Point p)

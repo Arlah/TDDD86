@@ -1,3 +1,9 @@
+/*
+ * Tobias Fellegi, tobfe318
+ * Thomas Annerfeldt,
+ *
+ * A class for the array storing the Tiles
+ */
 
 #ifndef TILELIST_H
 #define TILELIST_H
@@ -7,7 +13,15 @@
 
 class TileList {
 public:
+
+    /*
+     * Creates a new defult array
+     */
     TileList();
+
+    /*
+     * Clears the memory used by the array
+     */
     ~TileList();
 
     /*

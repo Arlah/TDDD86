@@ -3,6 +3,7 @@
  * Thomas Annerfeldt,
  *
  * Implementation of the TileList class
+ * For the different functions purpose check the TileList.h file
  */
 
 #include "TileList.h"
