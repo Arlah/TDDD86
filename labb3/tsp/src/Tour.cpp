@@ -17,7 +17,7 @@ Tour::Tour()
 
 Tour::~Tour()
 {
-    delete[] tour;
+
 }
 
 void Tour::show()
@@ -71,7 +71,7 @@ double Tour::distance()
 void Tour::insertNearest(Point p)
 {
     if (startNode == nullptr) {
-        startNode = newNode(p);
+        startNode = new Node(p);
         startNode -> next = startNode;
     }
     else {
@@ -80,15 +80,40 @@ void Tour::insertNearest(Point p)
         double nearDist = curNode->point.distanceTo(p);
 
         while (curNode -> next != startNode) {
-            if (p.distanceTo(curNodecurNode -> next -> point) < nearDist) {
-                nearDist = p.distanceTo(curNodecurNode -> next -> point);
+            if (p.distanceTo(curNode -> next -> point) < nearDist) {
+                nearDist = p.distanceTo(curNode -> next -> point);
                 nearNode = curNode -> next;
             }
+            curNode = curNode -> next;
         }
+        Node* temp = new Node(p, nearNode -> next);
+        nearNode -> next = temp;
     }
 }
 
 void Tour::insertSmallest(Point p)
 {
+    if (startNode == nullptr) {
+        startNode = new Node(p);
+        startNode -> next = startNode;
+    }
+    else {
+        Node* curNode = startNode;
+        Node* smallNode = startNode;
+        double curDist = 10000000000000;
 
+        while (curNode -> next != startNode) {
+            double newDist = curNode -> point.distanceTo(p);
+            newDist += p.distanceTo(curNode -> next -> point);
+            newDist -= curNode -> point.distanceTo(curNode -> next -> point);
+
+            if (newDist < curDist) {
+                curDist = newDist;
+                smallNode = curNode;
+            }
+            curNode = curNode -> next;
+        }
+        Node* temp = new Node(p, smallNode -> next);
+        smallNode -> next = temp;
+    }
 }
