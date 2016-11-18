@@ -16,7 +16,6 @@ void printGrid(const Grid<char>& grid) {
 
     int r = grid.numRows();
     int c = grid.numCols();
-    std::string gridrep;
 
     for (int y = 0; y < r; y++) {
         for (int x = 0; x < c; x++) {
@@ -78,6 +77,7 @@ void tick(Grid<char>& grid) {
             }
         }
     }
+
     grid = temp_grid;
     printGrid(grid);
 }
@@ -93,21 +93,10 @@ void animate(Grid<char>& grid, int cycles) {
     }
 }
 
-int main() {
-
+void createGrid(Grid<char>& grid) {
     int row;
     int col;
     std::string file;
-    Grid<char> game_board;
-
-
-    std::cout << "Welcome to the TDDD86 Game of Life,\n" <<
-                 "a simulation of the lifecycle of a bacteria colony.\n" <<
-                 "Cells (X) live and die by the following rules:\n" <<
-                 "- A cell with 1 or fewer neighbours dies.\n" <<
-                 "- Locations with 2 neighbours remain stable.\n" <<
-                 "- Locations with 3 neighbours will create life.\n" <<
-                 "- A cell with 4 or more neighbours dies" << std::endl;
 
     std::cout << "\nGrid input file name? ";
 
@@ -122,19 +111,34 @@ int main() {
         row = std::stoi(line);
     getline(input, line);
         col = std::stoi(line);
-    game_board.resize(row, col);
+    grid.resize(row, col);
 
 
     // Fills the grid with the - and X
     for (int y = 0; y < row; y++) {
         getline(input, line);
         for (int x = 0; x < col; x++) {
-            game_board[y][x] = line[x];
+            grid[y][x] = line[x];
         }
     }
-
     input.close();
-    printGrid(game_board);
+    printGrid(grid);
+}
+
+int main() {
+
+    Grid<char> game_board;
+
+
+    std::cout << "Welcome to the TDDD86 Game of Life,\n" <<
+                 "a simulation of the lifecycle of a bacteria colony.\n" <<
+                 "Cells (X) live and die by the following rules:\n" <<
+                 "- A cell with 1 or fewer neighbours dies.\n" <<
+                 "- Locations with 2 neighbours remain stable.\n" <<
+                 "- Locations with 3 neighbours will create life.\n" <<
+                 "- A cell with 4 or more neighbours dies" << std::endl;
+
+    createGrid(game_board);
 
     // Loop for input from the user determining action
     char type;
